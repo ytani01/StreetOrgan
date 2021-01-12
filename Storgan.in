@@ -16,7 +16,7 @@ VENVDIR="%%% VENVDIR %%%"
 
 CONF_PATH="$MYDIR/$CONF_FILE"
 
-#[TBD] export PYGAME_HIDE_SUPPORT_PROMPT=hide
+export PYGAME_HIDE_SUPPORT_PROMPT=hide
 
 ### main
 

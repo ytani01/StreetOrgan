@@ -4,6 +4,32 @@
 #
 #   (c) 2021 Yoichi Tanibayashi
 #
+############################################################
+help() {
+    cat <<'END'
+
+[インストール後のディレクトリ構造]
+
+ $HOME/ ... ホームディレクトリ
+    |
+    +- bin/ ... シェルスクリプトなど
+    |   |
+    |   +- Storgan ... メイン・コマンド・スクリプト (wrapper script)
+    |   +- storgan.conf ... 設定ファイル
+    |
+    +- env1/  ... python3 Virtualenv(venv) 【ユーザが作成する】
+        |
+        +- StreetOrgan/ ... ``StreetOrgan`` gitリポジトリ
+        |
+        | 【以下、インストールに必要なライブラリなど】
+        |
+        +- MIDI-lib/
+        :
+
+END
+}
+
+############################################################
 MYNAME=`basename $0`
 MYDIR=`dirname $0`
 BINDIR="$HOME/bin"
@@ -103,7 +129,7 @@ MYDIR=`pwd`
 while getopts uh OPT; do
     case $OPT in
         u) uninstall; exit 0;;
-        h) usage; exit 0;;
+        h) usage; help; exit 0;;
         *) usage; exit 1;;
     esac
     shift
