@@ -6,7 +6,28 @@ MIDIデータを解析して、
 手回しオルガン用のロール・ブックを自動作成します。
 
 
-## 基本
+## 1. Install
+
+```bash
+$ cd ~
+$ python3 -m env1
+$ cd env1
+$ . ./bin/activate
+(env1)$ git clone git@github.com:ytani01/StreetOrgan.git
+(env1)$ ./StreetOrgan/install.sh
+```
+
+## 2. Usage
+
+```bash
+$ Storgan -h
+$ Storgan SUB_COMMAND -h
+```
+
+
+## A. 手回しオルガン用ロール・ブック
+
+### A.1 基本
 
 * 右から左
 * 34音階、低音部で、一部半音がない
@@ -15,6 +36,6 @@ MIDIデータを解析して、
 ![](docs/StreetOrgan-Book1.jpg)
 
 
-## Reference
+## B. Reference
 
 * [てまわしオルガン キノ(紀あさ)](http://www.temawashi.org/)

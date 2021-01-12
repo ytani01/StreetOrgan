@@ -1,0 +1,39 @@
+#!/bin/sh
+#
+# ``%%% MY_PYTHON_PKG %%%`` wrapper script
+#
+#    (c) 2021 Yoichi Tanibayashi
+#
+MYNAME=`basename $0`
+MYDIR=`dirname $0`
+BINDIR="$HOME/bin"
+
+MY_PYTHON_PKG="%%% MY_PYTHON_PKG %%%"
+
+MY_GITDIR="%%% MY_GITDIR %%%"
+CONF_FILE="%%% CONF_FILE %%%"
+VENVDIR="%%% VENVDIR %%%"
+
+CONF_PATH="$MYDIR/$CONF_FILE"
+
+#[TBD] export PYGAME_HIDE_SUPPORT_PROMPT=hide
+
+### main
+
+if [ x$VIRTUAL_ENV != x$VENVDIR ]; then
+   if [ -f $VENVDIR/bin/activate ]; then
+       . $VENVDIR/bin/activate
+       echo "(VIRTUAL_ENV=$VIRTUAL_ENV)"
+   else
+       echo
+       echo "ERROR(venv): can not activate python3 Virtualenv"
+       echo
+    exit 1
+   fi
+fi
+
+exec python -m $MY_PYTHON_PKG $*
+
+### Local Variables: ***
+### mode:shell-script ***
+### End: ***
