@@ -119,7 +119,13 @@ class RollBook:
         note: int
             MIDI note number
         """
-        scale = 0
+        scale = -1
+
+        for s, offset in enumerate(self._conf['note offset']):
+            if self._conf['base note'] + offset == note:
+                scale = s
+                break
+            
         return scale
 
     def sec2mm(self, sec: float) -> float:
@@ -151,8 +157,11 @@ class RollBook:
         note = note_info.note
         start_sec = note_info.abs_time
         sec = note_info.length()
-        scale = self.note2scale(note)
         mm = self.sec2mm(sec)
+        scale = self.note2scale(note)
+
+        if scale < 0:
+            return None
 
         x0 = self.sec2mm(start_sec)
         y0 = scale * self._conf['pitch'] + self._conf['margin']
@@ -197,7 +206,12 @@ class RollBook:
         svg += '\n'
 
         for hi in holes:
-            svg += hi.svg() + '\n'
+            if hi is None:
+                s1 = '???'
+            else:
+                s1 = hi.svg()
+                
+            svg += s1 + '\n'
 
         svg += '</svg>\n'
         return svg
