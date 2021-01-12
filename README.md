@@ -1,5 +1,11 @@
 # Street Organ Roll Book Maker
 
+【未完成】
+
+MIDIデータを解析して、
+手回しオルガン用のロール・ブックを自動作成します。
+
+
 ## 基本
 
 * 右から左
@@ -7,6 +13,7 @@
 * 1秒 = 約5cm
 
 ![](docs/StreetOrgan-Book1.jpg)
+
 
 ## Reference
 
