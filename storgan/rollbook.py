@@ -60,14 +60,18 @@ class HoleInfo:
         svg: str
             SVG data
         """
-        svg = '<path style="%s"'
+        svg = '<path style="'
+        svg += 'fill:none;'
+        svg += 'stroke:#0000FF;'
+        svg += 'stroke-width:0.1;'
+        svg += 'stroke-dasharray:none"'
         svg += ' d="M %.2f %.2f' % (self.x0, self.y0)
         svg += ' L %.2f %.2f' % (self.x1, self.y0)
         svg += ' L %.2f %.2f' % (self.x1, self.y1)
         svg += ' L %.2f %.2f' % (self.x0, self.y1)
         svg += ' L %.2f %.2f' % (self.x0, self.y0)
         svg += ' Z />"'
-        
+
         return svg
 
 
@@ -135,7 +139,7 @@ class RollBook:
             if self._conf['base note'] + offset == note:
                 scale = s
                 break
-            
+
         return scale
 
     def sec2mm(self, sec: float) -> float:
@@ -215,7 +219,7 @@ class RollBook:
         Parameters
         ----------
         holes: list of HoleInfo
-        
+
         """
         svg = '<svg xmlns="%s" version="%s"' % (
             "http://www.w3.org/2000/svg", "1.1")
@@ -229,7 +233,7 @@ class RollBook:
                 s1 = ''
             else:
                 s1 = hi.svg()
-                
+
             svg += s1 + '\n'
 
         svg += '</svg>\n'
