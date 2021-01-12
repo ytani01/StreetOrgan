@@ -60,7 +60,14 @@ class HoleInfo:
         svg: str
             SVG data
         """
-        svg = '<path style ... d="M ..." />'
+        svg = '<path style="%s"'
+        svg += ' d="M %.2f %.2f' % (self.x0, self.y0)
+        svg += ' L %.2f %.2f' % (self.x1, self.y0)
+        svg += ' L %.2f %.2f' % (self.x1, self.y1)
+        svg += ' L %.2f %.2f' % (self.x0, self.y1)
+        svg += ' L %.2f %.2f' % (self.x0, self.y0)
+        svg += ' Z />"'
+        
         return svg
 
 
@@ -88,6 +95,9 @@ class RollBook:
 
         self._conf = self.get_conf(self._model, self._conf_file)
         self._log.debug('conf=%s', json.dumps(self._conf))
+
+        self._width = 0
+        self._height = self._conf['book height']
 
         self._midi_parser = Parser(debug=self._dbg)
 
@@ -187,10 +197,16 @@ class RollBook:
         """
         hole_info = []
 
+        self._width = 0
+
         for ni in notes:
             self._log.debug('ni=%s', ni)
 
-            hole_info.append(self.noteinfo2holeinfo(ni))
+            hi = self.noteinfo2holeinfo(ni)
+            if hi:
+                self._width = max(hi.x1, self._width)
+
+            hole_info.append(hi)
 
         return hole_info
 
@@ -203,11 +219,14 @@ class RollBook:
         """
         svg = '<svg xmlns="%s" version="%s"' % (
             "http://www.w3.org/2000/svg", "1.1")
-        svg += '\n'
+        svg += ' width="%.2fmm" height="%.2fmm"' % (
+            self._width, self._height)
+        svg += ' viewBox="0 0 %.2f %.2f">\n' % (
+            self._width, self._height)
 
         for hi in holes:
             if hi is None:
-                s1 = '???'
+                s1 = ''
             else:
                 s1 = hi.svg()
                 
