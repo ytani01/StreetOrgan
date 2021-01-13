@@ -13,7 +13,7 @@ with open("README.md") as f:
 
 setup(
     name='storgan',
-    version='0.0.1',
+    version='0.1.0',
     description='Streat Organ Roll Book Maker',
     long_description=long_description,
     long_description_content_type="text/markdown",
