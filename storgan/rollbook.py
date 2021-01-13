@@ -13,64 +13,116 @@ from midilib import Parser
 from .my_logger import get_logger
 
 
+DEF_LINE_WIDTH = 0.1
+
+
+def note2scale(midi_note, base_note, note_offset=[]) -> int:
+    """
+    Parameters
+    ----------
+    midi_note: int
+    base_note: int
+    note_offset: list of int
+
+    Returns
+    -------
+    scale: int
+    """
+    scale = -1
+
+    for s, offset in enumerate(note_offset):
+        if base_note + offset == midi_note:
+            scale = s
+            break
+
+    return scale
+
+def svg_square(x, y, w, h, color, line_width=DEF_LINE_WIDTH,
+               stroke_dasharray='none') -> str:
+    """
+    Parameters
+    ----------
+    x, y, w, h: float
+    color: str
+    line_width: float
+    stroke_dasharray: str
+
+    Returns
+    -------
+    svg: str
+
+    """
+    svg = '<path style="'
+    svg += 'fill:none;'
+    svg += 'stroke:%s;' % (color)
+    svg += 'stroke-width:%s;' % (line_width)
+    svg += 'stroke-dasharray:%s"' % (stroke_dasharray)
+    svg += ' d="M %.2f %.2f h %.2f v %.2f h %.2f Z" />\n' % (
+        -x, -y, -w, -h, w)
+
+    return svg
+
+
 class HoleInfo:
     """
     Roll Book Hole data entity
 
     Attributes
     ----------
-    note: int
-        MIDI note number
+    note_info: midilib.NoteInfo
+        MIDI note information
     sec: float
         length in sec
     scale: int
         scale number
-    x0, y0, x1, y1: float
+    x, y, w, h: float
         coordinate in mm
     """
-    def __init__(self,
-                 note=None, start_sec=None, sec=None,
-                 scale=None,
-                 x0=None, y0=None, x1=None, y1=None,
-                 debug=False):
+    def __init__(self, note_info=None, conf=None, debug=False):
         self._dbg = debug
         self._log = get_logger(self.__class__.__name__, self._dbg)
 
-        self.note = note
-        self.start_sec = start_sec
-        self.sec = sec
+        self.note_info = note_info
+        self.conf = conf
 
-        self.scale = scale
-        (self.x0, self.y0) = (x0, y0)
-        (self.x1, self.y1) = (x1, y1)
+        self.start_sec = self.note_info.abs_time
+        self.sec = self.note_info.length()
+        self.scale = note2scale(self.note_info.note,
+                                self.conf['base note'],
+                                self.conf['note offset'])
+
+        self.x = self.start_sec * self.conf['1sec']
+        self.y = self.scale * self.conf['pitch'] + self.conf['margin']
+        self.w = self.sec * self.conf['1sec']
+        self.h = self.conf['hole height']
 
     def __str__(self):
         """ __str__ """
         str_data = 'note:%03d start_sec:%07.2f sec:%05.2f' % (
-            self.note, self.start_sec, self.sec)
+            self.note_info.note, self.start_sec, self.sec)
         str_data += ' scale:%02d' % (self.scale)
         str_data += ' (%.2f, %.2f)-(%.2f, %.2f)' % (
-            self.x0, self.y0, self.x1, self.y1)
+            self.x, self.y, self.w, self.h)
         return str_data
 
-    def svg(self):
-        """
+    def svg(self, color='#FF0000', line_width=DEF_LINE_WIDTH,
+            stroke_dasharray='none'):
+        """ generate SVG
+
+        Parameters
+        ----------
+        color: str
+        line_width: float
+        stroke_dasharray: str
+
         Returns
         -------
         svg: str
             SVG data
         """
-        svg = '<path style="'
-        svg += 'fill:none;'
-        svg += 'stroke:#0000FF;'
-        svg += 'stroke-width:0.1;'
-        svg += 'stroke-dasharray:none"'
-        svg += ' d="M %.2f %.2f' % (self.x0, self.y0)
-        svg += ' L %.2f %.2f' % (self.x1, self.y0)
-        svg += ' L %.2f %.2f' % (self.x1, self.y1)
-        svg += ' L %.2f %.2f' % (self.x0, self.y1)
-        svg += ' L %.2f %.2f' % (self.x0, self.y0)
-        svg += ' Z />"'
+        svg = svg_square(self.x, self.y, self.w, self.h,
+                         color, line_width,
+                         stroke_dasharray=stroke_dasharray)
 
         return svg
 
@@ -102,6 +154,8 @@ class RollBook:
 
         self._width = 0
         self._height = self._conf['book height']
+        self._holes = []
+        self._svg = ''
 
         self._midi_parser = Parser(debug=self._dbg)
 
@@ -126,116 +180,42 @@ class RollBook:
 
         return {}
 
-    def note2scale(self, note) -> int:
-        """
+    def svg(self, color='#0000FF', hole_color='#FF0000',
+            line_width=DEF_LINE_WIDTH, stroke_dasharray='none'):
+        """ generate SVG
+
         Parameters
         ----------
-        note: int
-            MIDI note number
-        """
-        scale = -1
-
-        for s, offset in enumerate(self._conf['note offset']):
-            if self._conf['base note'] + offset == note:
-                scale = s
-                break
-
-        return scale
-
-    def sec2mm(self, sec: float) -> float:
-        """
-        Parameters
-        ----------
-        sec: float
-            length in sec
+        color: str
+        hole_color: str
+        line_width: float
+        stroke_dasharray: str
 
         Returns
         -------
-        mm: float
-            length in mm
+        svg: str
+            SVG data
         """
-        mm = self._conf['1sec'] * sec
-        return mm
-
-    def noteinfo2holeinfo(self, note_info):
-        """
-        Parameters
-        ----------
-        note_info: midilib.NoteInfo
-
-        Returns
-        -------
-        hole_info: HoleInfo
-
-        """
-        note = note_info.note
-        start_sec = note_info.abs_time
-        sec = note_info.length()
-        mm = self.sec2mm(sec)
-        scale = self.note2scale(note)
-
-        if scale < 0:
-            return None
-
-        x0 = self.sec2mm(start_sec)
-        y0 = scale * self._conf['pitch'] + self._conf['margin']
-        x1 = x0 + mm
-        y1 = y0 + self._conf['hole height']
-
-        hole_info = HoleInfo(note=note, start_sec=start_sec, sec=sec,
-                             scale=scale,
-                             x0=x0, y0=y0, x1=x1, y1=y1,
-                             debug=self._dbg)
-        return hole_info
-
-    def notes2holes(self, notes):
-        """
-        Parameters
-        ----------
-        notes: list of midilib.NoteInfo
-
-        Returns
-        -------
-        hole_info: list of HoleInfo
-
-        """
-        hole_info = []
-
-        self._width = 0
-
-        for ni in notes:
-            self._log.debug('ni=%s', ni)
-
-            hi = self.noteinfo2holeinfo(ni)
-            if hi:
-                self._width = max(hi.x1, self._width)
-
-            hole_info.append(hi)
-
-        return hole_info
-
-    def holes2svg(self, holes):
-        """
-        Parameters
-        ----------
-        holes: list of HoleInfo
-
-        """
-        svg = '<svg xmlns="%s" version="%s"' % (
-            "http://www.w3.org/2000/svg", "1.1")
+        svg = '<svg xmlns="http://www.w3.org/2000/svg"'
         svg += ' width="%.2fmm" height="%.2fmm"' % (
             self._width, self._height)
-        svg += ' viewBox="0 0 %.2f %.2f">\n' % (
-            self._width, self._height)
+        svg += ' viewBox="%s %s %s %s">\n' % (
+            -self._width, -self._height, self._width, self._height)
+        # svg += '<g id="all">\n'
 
-        for hi in holes:
-            if hi is None:
-                s1 = ''
+        svg += svg_square(0, 0, self._width, self._height,
+                          color, line_width,
+                          stroke_dasharray=stroke_dasharray)
+
+        for hi in self._holes:
+            if hi.scale < 0:
+                s1 = hi.svg(color='#000000', stroke_dasharray='3 1')
             else:
-                s1 = hi.svg()
+                s1 = hi.svg(color=hole_color)
 
-            svg += s1 + '\n'
+            svg += s1
 
+        # svg += '</g>\n'
         svg += '</svg>\n'
         return svg
 
@@ -258,9 +238,17 @@ class RollBook:
         midi = self._midi_parser.parse(midi_file, channel)
         self._log.debug('midi[channel_set]=%s', midi['channel_set'])
 
-        holes = self.notes2holes(midi['note_info'])
-        for hi in holes:
+        for ni in midi['note_info']:
+            hi = HoleInfo(ni, self._conf, debug=self._dbg)
             self._log.debug('hi=%s', hi)
 
-        svg = self.holes2svg(holes)
-        print(svg)
+            if hi:
+                self._width = max(hi.x + hi.w, self._width)
+
+            self._holes.append(hi)
+
+        self._log.debug('width=%s, len(hole)=%s',
+                        self._width, len(self._holes))
+
+        svg = self.svg()
+        return svg

@@ -4,6 +4,7 @@
 """
 main for midi_tools
 """
+import os
 import click
 from midilib import Parser, Player
 from . import RollBook
@@ -12,18 +13,33 @@ from .my_logger import get_logger
 
 class RollBookApp:
     """ RollBookApp """
-    def __init__(self, midi_file, conf_file, model_name, channel,
+    DEF_OUT_DIR='~/Desktop'
+
+    def __init__(self, midi_file, conf_file,
+                 model_name,
+                 channel=[],
+                 out_file=None,
                  debug=False):
         """ Constructor """
         self._dbg = debug
         self._log = get_logger(self.__class__.__name__, self._dbg)
-        self._log.debug('midi_file=%s, conf_file=%s, model_name=%s',
-                        midi_file, conf_file, model_name)
+        self._log.debug('midi_file=%s, conf_file=%s',
+                        midi_file, conf_file)
+        self._log.debug('model_name=%s', model_name)
         self._log.debug('channel=%s', channel)
+        self._log.debug('out_file=%s', out_file)
 
         self._midi_file = midi_file
         self._conf_file = conf_file
         self._model_name = model_name
+        self._channel = channel
+        if not out_file:
+            out_file = '%s.svg' % (self._midi_file)
+
+        out_file = os.path.basename(out_file)
+        out_file = '%s/%s' % (self.DEF_OUT_DIR, out_file)
+        self._out_file = os.path.expanduser(out_file)
+        self._log.debug('[fix] out_file=%s', self._out_file)
 
         self._rollbook = RollBook(self._model_name, self._conf_file,
                                   debug=self._dbg)
@@ -32,8 +48,10 @@ class RollBookApp:
         """ main """
         self._log.debug('')
 
-        ret = self._rollbook.parse(self._midi_file)
-        self._log.debug('ret=%s', ret)
+        svg = self._rollbook.parse(self._midi_file, self._channel)
+
+        with open(self._out_file, mode='w') as f:
+            f.write(svg)
 
     def end(self) -> None:
         """ end ... do nothing """
