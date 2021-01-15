@@ -262,4 +262,4 @@ def play(midi_file,  # pylint: disable=too-many-arguments
 
 
 if __name__ == '__main__':
-    cli(prog_name='MidiLib')
+    cli(prog_name='Storgan')

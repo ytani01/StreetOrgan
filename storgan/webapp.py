@@ -78,6 +78,7 @@ class WebServer:
 
             workdir=self._workdir,
             size_limit=self._size_limit,
+
             debug=self._dbg
         )
         self._log.debug('app=%s', self._app.__dict__)

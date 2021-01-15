@@ -8,7 +8,7 @@ __author__ = 'Yoichi Tanibayashi'
 __date__ = '2021/01'
 
 from .rollbook import RollBook
-from .websvr import WebServer
+from .webapp import WebServer
 
 __all__ = ['RollBook'
            'WebServer']

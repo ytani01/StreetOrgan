@@ -37,6 +37,7 @@ def note2scale(midi_note, base_note, note_offset=[]) -> int:
 
     return scale
 
+
 def svg_square(x, y, w, h, color, line_width=DEF_LINE_WIDTH,
                stroke_dasharray='none') -> str:
     """
@@ -130,9 +131,11 @@ class HoleInfo:
 class RollBook:
     """ RollBook class
     """
+    DEF_MODEL_NAME = 'ModelName'
     DEF_CONF_FILE = os.path.expanduser('~/bin/storgan.conf')
 
-    def __init__(self, model: str, conf_file=DEF_CONF_FILE, debug=False):
+    def __init__(self, model: str = DEF_MODEL_NAME,
+                 conf_file: str = DEF_CONF_FILE, debug=False):
         """ Constructor
 
         Parameters
@@ -230,8 +233,8 @@ class RollBook:
 
         Returns
         -------
-        hole_list: list of HoleInfo
-
+        svg: str
+            SVG data (text)
         """
         self._log.debug('midi_file=%s', midi_file)
 
