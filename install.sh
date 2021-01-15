@@ -87,7 +87,7 @@ install_external_python_pkg() {
         git clone $_GIT || exit 1
     fi
 
-    cd_echo $_DIR
+    cd_echo ./$_DIR
     git pull
     pip install .
     echo

@@ -1,5 +1,5 @@
 #
-# (c) 2020 Yoichi Tanibayashi
+# (c) 2021 Yoichi Tanibayashi
 #
 """
 main for midi_tools
@@ -7,13 +7,13 @@ main for midi_tools
 import os
 import click
 from midilib import Parser, Player
-from . import RollBook
+from . import RollBook, WebServer
 from .my_logger import get_logger
 
 
 class RollBookApp:
     """ RollBookApp """
-    DEF_OUT_DIR='~/Desktop'
+    DEF_OUT_DIR = '~/Desktop'
 
     def __init__(self, midi_file, conf_file,
                  model_name,
@@ -137,6 +137,34 @@ def cli(ctx):
         print(ctx.get_help())
     else:
         pass
+
+
+@cli.command(help="""
+Web server""")
+@click.option('--port', '-p', 'port', type=int,
+              default=WebServer.DEF_PORT,
+              help='port number')
+@click.option('--webroot', '-r', 'webroot', type=click.Path(exists=True),
+              default=WebServer.DEF_WEBROOT,
+              help='Web root directory')
+@click.option('--workdir', '-w', 'workdir', type=click.Path(),
+              default=WebServer.DEF_WORKDIR,
+              help='work directory')
+@click.option('--size_limit', '-l', 'size_limit', type=int,
+              default=100*1024*1024,
+              help='upload size limit, default=%s' % (
+                  WebServer.DEF_SIZE_LIMIT))
+@click.option('--debug', '-d', 'debug', is_flag=True, default=False,
+              help='debug flag')
+def websvr(port, webroot, workdir, size_limit, debug):
+    """ cmd1  """
+    log = get_logger(__name__, debug)
+
+    app = WebServer(port, webroot, workdir, size_limit, debug=debug)
+    try:
+        app.main()
+    finally:
+        log.info('end')
 
 
 @cli.command(context_settings=CONTEXT_SETTINGS, help='''
