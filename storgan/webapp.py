@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 #
 # (c) 2021 Yoichi Tanibayashi
 #
@@ -12,7 +11,7 @@ import os
 import tornado.ioloop
 import tornado.httpserver
 import tornado.web
-from .handler1 import Handler1
+from .handler1 import Handler1, Download
 from .my_logger import get_logger
 
 
@@ -20,9 +19,9 @@ class WebServer:
     """
     Web application server
     """
-    DEF_PORT = 10080
+    DEF_PORT = 10081
 
-    DEF_WEBROOT = './webroot/'
+    DEF_WEBROOT = './webroot'
     URL_PREFIX = '/storgan'
     URL_PREFIX_HANDLER1 = URL_PREFIX + '/handler1'
 
@@ -68,6 +67,7 @@ class WebServer:
                 (r'%s' % self.URL_PREFIX, Handler1),
                 (r'%s/' % self.URL_PREFIX, Handler1),
                 (r'%s.*' % self.URL_PREFIX_HANDLER1, Handler1),
+                (r'%s/download/.*' % self.URL_PREFIX, Download),
             ],
             static_path=os.path.join(self._webroot, "static"),
             static_url_prefix=self.URL_PREFIX + '/static/',
@@ -75,8 +75,10 @@ class WebServer:
             autoreload=True,
             # xsrf_cookies=False,
 
-            url_prefix_handler1=self.URL_PREFIX_HANDLER1,
+            # url_prefix_handler1=self.URL_PREFIX_HANDLER1,
+            url_prefix_handler1=self.URL_PREFIX,
 
+            webroot=self._webroot,
             workdir=self._workdir,
             size_limit=self._size_limit,
 

@@ -13,6 +13,8 @@ MY_PYTHON_PKG="%%% MY_PYTHON_PKG %%%"
 MY_GITDIR="%%% MY_GITDIR %%%"
 CONF_FILE="%%% CONF_FILE %%%"
 VENVDIR="%%% VENVDIR %%%"
+WORKDIR="%%% WORKDIR %%%"
+WEBROOT="%%% WEBROOT %%%"
 
 CONF_PATH="$MYDIR/$CONF_FILE"
 
@@ -32,7 +34,12 @@ if [ x$VIRTUAL_ENV != x$VENVDIR ]; then
    fi
 fi
 
-exec python -m $MY_PYTHON_PKG $*
+if [ "$1" = "webapp" ]; then
+    shift
+    exec python -m $MY_PYTHON_PKG webapp -w $WORKDIR -r $WORKDIR/$WEBROOT $*
+else
+    exec python -m $MY_PYTHON_PKG $*
+fi
 
 ### Local Variables: ***
 ### mode:shell-script ***

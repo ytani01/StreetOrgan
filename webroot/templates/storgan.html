@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html>
-  <head lang="jp">
+  <head>
     <meta name="viewport"
           content="width=device-width, initial-scale=1">
     <meta charset="UTF-8">
@@ -44,10 +44,10 @@
           </div><!-- col -->
         </div><!-- row -->
         <div class="row">
-          <div class="col p-0 text-center">
-            {% if svg_data == '' %}
+          {% if svg_data == '' %}
+          <div class="col text-center">
             <form enctype="multipart/form-data"
-                  action="/storgan/handler1/"
+                  action="/storgan/"
                   method="post">
               <div class="container-fluid">
                 <div class="row">
@@ -63,12 +63,20 @@
                 </div>
               </div>
             </form>
-            {% else %}
-            {% autoescape None %}
-            {{ svg_data }}
-            <a href="./">[ ファイル選択に戻る ]</a>
-            {% end %}
           </div> <!-- col -->
+          {% else %}
+          <div class="col p-0">
+            {% autoescape None %}
+            <a href="./">[ ファイル選択に戻る ]</a>
+            <strong>{{ msg }}</strong>
+            <p>
+              <a href="/storgan/download/{{ svg_filename }}"
+                 target="_blank">
+                {{ svg_data }}
+              </a>
+            </p>
+           </div> <!-- col -->
+         {% end %}
         </div> <!-- row -->
         <div class="row">
         </div><!-- row -->
@@ -81,7 +89,7 @@
             Version {{ version }}
           </div>
           <div class="col-6 text-right">
-            (c) {{ copyright_year }} <strong>{{ author }}</strong>
+            &copy; {{ copyright_year }} <strong>{{ author }}</strong>
           </div>
         </div>
       </div>

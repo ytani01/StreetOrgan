@@ -156,7 +156,7 @@ Web server""")
                   WebServer.DEF_SIZE_LIMIT))
 @click.option('--debug', '-d', 'debug', is_flag=True, default=False,
               help='debug flag')
-def websvr(port, webroot, workdir, size_limit, debug):
+def webapp(port, webroot, workdir, size_limit, debug):
     """ cmd1  """
     log = get_logger(__name__, debug)
 
