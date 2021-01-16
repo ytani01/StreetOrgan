@@ -14,6 +14,7 @@ SUBCMD="webapp"
 CMD=$HOME/bin/$CMD_NAME
 LOGDIR=$HOME/storgan/log
 LOGFILE=$LOGDIR/$CMD_NAME.log
+BOOT_FLAG=1
 DEBUG_FLAG=
 
 #
@@ -32,9 +33,14 @@ usage() {
     echo
     echo "  Usage: $MYNAME [-h] [-d]"
     echo
+    echo "    -k   kill only"
     echo "    -d   debug flag"
     echo "    -h   show this usage"
     echo
+}
+
+get_pid() {
+    echo `ps x | grep python | sed -n '/storgan/s/ *//p' | cut -d ' ' -f 1`
 }
 
 #
@@ -42,12 +48,28 @@ usage() {
 #
 while getopts hkd OPT; do
     case $OPT in
-        h) usage; exit 0;;
+        k) BOOT_FLAG=0;;
         d) DEBUG_FLAG="-d";;
+        h) usage; exit 0;;
         *) usage; exit 1;;
     esac
     shift
 done
+
+#
+# kill
+#
+PIDS=`get_pid`
+while [ ! -z "$PIDS" ]; do
+    echo_do "kill $PIDS"
+    sleep 1
+    PIDS=`get_pid`
+done
+sleep 2
+
+if [ $BOOT_FLAG -eq 0 ]; then
+    exit 0
+fi
 
 #
 # boot
