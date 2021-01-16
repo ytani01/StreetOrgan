@@ -7,7 +7,7 @@ Handler1
 """
 __author__ = 'Yoichi Tanibayashi'
 __date__ = '2021/01'
-__version__ = '0.1'
+__version__ = '0.2.0'
 
 import os
 import tornado.web
@@ -17,6 +17,7 @@ from .my_logger import get_logger
 
 class Download(tornado.web.RequestHandler):
     """
+    Download SVG file
     """
     def __init__(self, app, req):
         """ Constructor """

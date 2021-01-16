@@ -17,7 +17,20 @@ $ . ./bin/activate
 (env1)$ ./StreetOrgan/install.sh
 ```
 
-## 2. Usage
+## 2. start server
+
+```bash
+$ boot-storgan.sh
+```
+
+## 3. connect from browser
+
+1. URL: http://hostname:10081/storgan/
+1. select a MIDI file
+1. download SVG file
+
+
+## 9. command line usage
 
 ```bash
 $ Storgan -h
