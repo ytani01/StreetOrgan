@@ -10,6 +10,7 @@ BINDIR="$HOME/bin"
 
 MY_PYTHON_PKG="%%% MY_PYTHON_PKG %%%"
 
+MY_VERSION="%%% MY_VERSION %%%"
 MY_GITDIR="%%% MY_GITDIR %%%"
 CONF_FILE="%%% CONF_FILE %%%"
 VENVDIR="%%% VENVDIR %%%"
@@ -36,7 +37,8 @@ fi
 
 if [ "$1" = "webapp" ]; then
     shift
-    exec python -m $MY_PYTHON_PKG webapp -w $WORKDIR -r $WORKDIR/$WEBROOT $*
+    exec python -m $MY_PYTHON_PKG \
+         webapp --version $MY_VERSION -w $WORKDIR -r $WORKDIR/$WEBROOT $*
 else
     exec python -m $MY_PYTHON_PKG $*
 fi

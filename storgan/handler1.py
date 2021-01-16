@@ -7,7 +7,6 @@ Handler1
 """
 __author__ = 'Yoichi Tanibayashi'
 __date__ = '2021/01'
-__version__ = '0.2.0'
 
 import os
 import tornado.web
@@ -38,6 +37,8 @@ class Download(tornado.web.RequestHandler):
 
         # [!! 重要 !!] 末尾の「/」
         self._url_path = app.settings.get('url_prefix_handler1') + '/'
+
+        self._version = app.settings.get('version')
 
         self._model_name = RollBook.DEF_MODEL_NAME
         self._conf_file = RollBook.DEF_CONF_FILE
@@ -72,7 +73,7 @@ class Download(tornado.web.RequestHandler):
                 self.write(data)
 
         self.finish()
-    
+
 
 class Handler1(tornado.web.RequestHandler):
     """
@@ -101,6 +102,8 @@ class Handler1(tornado.web.RequestHandler):
 
         # [!! 重要 !!] 末尾の「/」
         self._url_path = app.settings.get('url_prefix_handler1') + '/'
+
+        self._version = app.settings.get('version')
 
         self._model_name = RollBook.DEF_MODEL_NAME
         self._conf_file = RollBook.DEF_CONF_FILE
@@ -156,7 +159,7 @@ class Handler1(tornado.web.RequestHandler):
         self.render(self.HTML_FILE,
                     title=self.TITLE,
                     author=__author__,
-                    version=__version__,
+                    version=self._version,
                     copyright_year='2021',
                     size_limit=size_limit,
                     size_unit=size_unit,

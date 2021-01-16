@@ -205,6 +205,7 @@ mkdir -pv $BUILD_DIR
 
 echo "### build $WRAPPER_SCRIPT"
 sed -e "s?%%% MY_PYTHON_PKG %%%?$MY_PYTHON_PKG?" \
+    -e "s?%%% MY_VERSION %%%?`python setup.py --version`?"\
     -e "s?%%% MY_GITDIR %%%?$MYDIR?" \
     -e "s?%%% CONF_FILE %%%?$CONF_FILE?" \
     -e "s?%%% VENVDIR %%%?$VIRTUAL_ENV?" \

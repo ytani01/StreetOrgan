@@ -19,6 +19,7 @@ class RollBookApp:
                  model_name,
                  channel=[],
                  out_file=None,
+                 version='current',
                  debug=False):
         """ Constructor """
         self._dbg = debug
@@ -28,11 +29,14 @@ class RollBookApp:
         self._log.debug('model_name=%s', model_name)
         self._log.debug('channel=%s', channel)
         self._log.debug('out_file=%s', out_file)
+        self._log.debug('version=%s', version)
 
         self._midi_file = midi_file
         self._conf_file = conf_file
         self._model_name = model_name
         self._channel = channel
+        self._version = version
+
         if not out_file:
             out_file = '%s.svg' % (self._midi_file)
 
@@ -154,13 +158,16 @@ Web server""")
               default=100*1024*1024,
               help='upload size limit, default=%s' % (
                   WebServer.DEF_SIZE_LIMIT))
+@click.option('--version', 'version', type=str, default='current',
+              help='version string')
 @click.option('--debug', '-d', 'debug', is_flag=True, default=False,
               help='debug flag')
-def webapp(port, webroot, workdir, size_limit, debug):
+def webapp(port, webroot, workdir, size_limit, version, debug):
     """ cmd1  """
     log = get_logger(__name__, debug)
 
-    app = WebServer(port, webroot, workdir, size_limit, debug=debug)
+    app = WebServer(port, webroot, workdir, size_limit, version,
+                    debug=debug)
     try:
         app.main()
     finally:
@@ -180,16 +187,19 @@ Roll Book
               help='Model Name')
 @click.option('--channel', '-c', 'channel', type=int, multiple=True,
               help='MIDI channel')
+@click.option('--version', 'version', type=str, default='current',
+              help='version string')
 @click.option('--debug', '-d', 'dbg', is_flag=True, default=False,
               help='debug flag')
-def rollbook(midi_file, conf_file, model_name, channel, dbg) -> None:
+def rollbook(midi_file, conf_file, model_name, channel, version,
+             dbg) -> None:
     """
     rollbook main
     """
     log = get_logger(__name__, dbg)
 
     app = RollBookApp(midi_file, conf_file, model_name, channel,
-                      debug=dbg)
+                      version, debug=dbg)
     try:
         app.main()
     finally:

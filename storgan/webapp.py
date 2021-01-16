@@ -32,6 +32,7 @@ class WebServer:
     def __init__(self, port=DEF_PORT,
                  webroot=DEF_WEBROOT, workdir=DEF_WORKDIR,
                  size_limit=DEF_SIZE_LIMIT,
+                 version='current',
                  debug=False):
         """ Constructor
 
@@ -45,16 +46,20 @@ class WebServer:
 
         size_limit: int
             max upload size
+        version: str
+            version string
         """
         self._dbg = debug
         self._log = get_logger(self.__class__.__name__, self._dbg)
         self._log.info('port=%s, webroot=%s, workdir=%s, size_limit=%s',
                        port, webroot, workdir, size_limit)
+        self._log.info('version=%s', version)
 
         self._port = port
         self._webroot = webroot
         self._workdir = workdir
         self._size_limit = size_limit
+        self._version = version
 
         try:
             os.makedirs(self._workdir, exist_ok=True)
@@ -81,6 +86,7 @@ class WebServer:
             webroot=self._webroot,
             workdir=self._workdir,
             size_limit=self._size_limit,
+            version=self._version,
 
             debug=self._dbg
         )
