@@ -24,6 +24,7 @@ class WebServer:
 
     DEF_WEBROOT = './webroot/'
     URL_PREFIX = '/storgan'
+    URL_PREFIX_HANDLER1 = URL_PREFIX + '/handler1'
 
     DEF_WORKDIR = '/tmp/storgan'
 
@@ -66,15 +67,15 @@ class WebServer:
                 (r'/', Handler1),
                 (r'%s' % self.URL_PREFIX, Handler1),
                 (r'%s/' % self.URL_PREFIX, Handler1),
-                (r'%s/handler1.*' % self.URL_PREFIX, Handler1),
+                (r'%s.*' % self.URL_PREFIX_HANDLER1, Handler1),
             ],
             static_path=os.path.join(self._webroot, "static"),
             static_url_prefix=self.URL_PREFIX + '/static/',
-
             template_path=os.path.join(self._webroot, "templates"),
-
             autoreload=True,
-            xsrf_cookies=False,
+            # xsrf_cookies=False,
+
+            url_prefix_handler1=self.URL_PREFIX_HANDLER1,
 
             workdir=self._workdir,
             size_limit=self._size_limit,

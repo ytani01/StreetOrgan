@@ -15,7 +15,19 @@ help() {
     +- bin/ ... シェルスクリプトなど
     |   |
     |   +- Storgan ... メイン・コマンド・スクリプト (wrapper script)
+    |
+    +- storgan/
+    |   |
     |   +- storgan.conf ... 設定ファイル
+    |   +- webroot/
+    |       |
+    |       +- template/
+    |       +- static/
+    |           |
+    |           +- js/
+    |           +- css/
+    |           +- midi/
+    |           +- svg/
     |
     +- env1/  ... python3 Virtualenv(venv) 【ユーザが作成する】
         |

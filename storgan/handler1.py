@@ -22,7 +22,6 @@ class Handler1(tornado.web.RequestHandler):
     TITLE = 'Street Organ Roll Book Maker'
 
     HTML_FILE = 'storgan.html'
-    URL_PATH = '/storgan/handler1/'  # [!! 重要 !!] 末尾の「/」
 
     def __init__(self, app, req):
         """ Constructor """
@@ -37,6 +36,9 @@ class Handler1(tornado.web.RequestHandler):
 
         self._size_limit = app.settings.get('size_limit')
         self._mylog.debug('size_limit=%s', self._size_limit)
+
+        # [!! 重要 !!] 末尾の「/」
+        self._url_path = app.settings.get('url_prefix_handler1') + '/'
 
         self._model_name = RollBook.DEF_MODEL_NAME
         self._conf_file = RollBook.DEF_CONF_FILE
@@ -82,15 +84,16 @@ class Handler1(tornado.web.RequestHandler):
         # self._mylog.debug('svg_data=%s', svg_data)
         self._mylog.debug('request=%s', self.request)
 
-        if self.request.uri != self.URL_PATH:
-            self.redirect(self.URL_PATH, permanent=True)
+        if self.request.uri != self._url_path:
+            self.redirect(self._url_path, permanent=True)
             return
 
         size_limit, size_unit = self.get_size_unit(self._size_limit)
 
         self.render(self.HTML_FILE,
                     title=self.TITLE,
-                    author=__author__, version=__version__,
+                    author=__author__,
+                    version=__version__,
                     copyright_year='2021',
                     size_limit=size_limit,
                     size_unit=size_unit,
@@ -101,25 +104,21 @@ class Handler1(tornado.web.RequestHandler):
         """
         POST method
         """
-        """
-        self._mylog.debug('request=%s', self.request.__dict__)
-        self._mylog.debug('request.body_arguments=%s',
-                          self.request.body_arguments)
-        self._mylog.debug('request.files[\'file1\']=%s',
-                          self.request.files['file1'])
-        """
-
         file1 = self.request.files['file1'][0]
         file1_path = '%s/%s' % (self._workdir, file1['filename'])
+        svg1_path = '%s.svg' % (file1_path)
 
         if not os.path.exists(file1_path):
             with open(file1_path, mode='wb') as f:
                 f.write(file1['body'])
 
         f_size, unit = self.get_filesize(file1_path)
-        msg = '%s(%.1f %s)' % (file1_path, f_size, unit)
+        msg = '%s (%.1f %s)' % (file1_path, f_size, unit)
 
         svg_data = self._rollbook.parse(file1_path)
         self._mylog.debug('svg_data=%a', svg_data)
+
+        with open(svg1_path, mode='w') as f:
+            f.write(svg_data)
 
         self.get(svg_data=svg_data, msg=msg)
