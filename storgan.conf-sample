@@ -1,10 +1,10 @@
 [
   {
     "model": "ModelName",
-    "book height": 133,
-    "margin": 5,
+    "book height": 127,
+    "margin": 3.5,
     "pitch": 3.5,
-    "hole height": 1.8,
+    "hole height": 2.0,
     "1sec": 50,
 
     "note name": [
