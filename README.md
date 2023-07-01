@@ -44,6 +44,7 @@ $ Storgan SUB_COMMAND -h
 
 * 右から左
 * 34音階、低音部で、一部半音がない
+* D#がない
 * 1秒 = 約5cm
 
 ![](docs/StreetOrgan-Book1.jpg)
