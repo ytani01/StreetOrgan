@@ -1,0 +1,1 @@
+@reboot sleep 30; $HOME/bin/boot-storgan.sh >> /tmp/boot-storgan.log 2>&1 &
