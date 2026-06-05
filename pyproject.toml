@@ -1,0 +1,35 @@
+[project]
+name = "storgan"
+version = "0.2.1"
+description = "Streat Organ Roll Book Maker"
+readme = "README.md"
+authors = [
+    { name = "Yoichi Tanibayashi", email = "yoichi@tanibayashi.jp" }
+]
+urls = { Repository = "https://github.com/ytani01/StreetOrgan/" }
+requires-python = ">=3.7"
+dependencies = [
+    "click",
+    "tornado",
+    "pygame-ce",
+    "midilib",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.scripts]
+storgan = "storgan.__main__:cli"
+
+[tool.basedpyright]
+typeCheckingMode = "standard"
+
+reportMissingTypeStubs = false
+reportOptionalMemberAccess = false
+reportOptionalSubscript = false
+reportGeneralTypeIssues = false
+reportUnsupportedDunderAll = false
+
+[tool.uv.sources]
+midilib = { git = "https://github.com/ytani01/MIDI-lib.git" }
